@@ -22,4 +22,11 @@ app.use(cookieParser());
 // Routes
 app.use('/api/auth', authRouter);
 
+app.use('/', (req, res) => {
+  return res.status(200).json({
+    success: true,
+    message: 'Server is running...',
+  });
+});
+
 export default app;
