@@ -1,10 +1,10 @@
 import express from 'express';
-import helmet from 'helmet';
 import cors from 'cors';
 import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
 import authRouter from './routes/auth.routes.js';
 import config from './config/config.js';
+import helmet from 'helmet';
 
 const app = express();
 
