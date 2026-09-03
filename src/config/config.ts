@@ -5,6 +5,7 @@ dotenv.config();
 interface ConfigTypes {
   PORT: string;
   SERVER_URL: string;
+  CLIENT_URL: string;
   NODE_ENV: string;
   JWT_SECRET: string;
   MONGO_URI: string;
@@ -16,6 +17,10 @@ if (!process.env.PORT) {
 
 if (!process.env.SERVER_URL) {
   throw new Error('SERVER_URL is not defined in environment variable');
+}
+
+if (!process.env.CLIENT_URL) {
+  throw new Error('CLIENT_URL is not defined in environment variable');
 }
 
 if (!process.env.NODE_ENV) {
@@ -33,6 +38,7 @@ if (!process.env.MONGO_URI) {
 const config: ConfigTypes = {
   PORT: process.env.PORT,
   SERVER_URL: process.env.SERVER_URL,
+  CLIENT_URL: process.env.CLIENT_URL,
   NODE_ENV: process.env.NODE_ENV,
   JWT_SECRET: process.env.JWT_SECRET,
   MONGO_URI: process.env.MONGO_URI,

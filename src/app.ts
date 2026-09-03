@@ -4,6 +4,7 @@ import cors from 'cors';
 import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
 import authRouter from './routes/auth.routes.js';
+import config from './config/config.js';
 
 const app = express();
 
@@ -11,7 +12,7 @@ const app = express();
 app.use(helmet());
 app.use(
   cors({
-    origin: 'http://localhost:3000',
+    origin: config.CLIENT_URL,
     credentials: true,
   }),
 );
