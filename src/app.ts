@@ -4,12 +4,10 @@ import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
 import authRouter from './routes/auth.routes.js';
 import config from './config/config.js';
-import helmet from 'helmet';
 
 const app = express();
 
 // Security
-app.use(helmet());
 app.use(
   cors({
     origin: config.CLIENT_URL,
