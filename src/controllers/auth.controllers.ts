@@ -1,29 +1,28 @@
 import type { Request, Response } from 'express';
 import userModel from '../models/user.model.js';
-import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import config from '../config/config.js';
 import sessionModel from '../models/session.model.js';
 import crypto from 'crypto';
 
 export async function signup(req: Request, res: Response) {
-  const { username, phoneNumber, password } = req.body;
+  const { email, phoneNumber, password } = req.body;
 
   const userExist = await userModel.findOne({
-    $or: [{ username }, { phoneNumber }],
+    $or: [{ email: email?.toLowerCase().trim() }, { phoneNumber }],
   });
 
   if (userExist) {
     return res.status(409).json({
       success: false,
-      message: 'Username or phoneNumber already exists',
+      message: 'Email or phoneNumber already exists',
     });
   }
 
   const hashedPassword = crypto.createHash('sha256').update(password).digest('hex');
 
   const user = await userModel.create({
-    username,
+    email,
     phoneNumber,
     password: hashedPassword,
   });
@@ -31,7 +30,7 @@ export async function signup(req: Request, res: Response) {
   const refreshToken = jwt.sign(
     {
       id: user._id,
-      username: user.username,
+      email: user.email,
       phoneNumber: user.phoneNumber,
     },
     config.JWT_SECRET,
@@ -52,7 +51,7 @@ export async function signup(req: Request, res: Response) {
   const accessToken = jwt.sign(
     {
       id: user._id,
-      username: user.username,
+      email: user.email,
       phoneNumber: user.phoneNumber,
     },
     config.JWT_SECRET,
@@ -72,7 +71,7 @@ export async function signup(req: Request, res: Response) {
     success: true,
     message: 'User signup successfully',
     data: {
-      username: user.username,
+      email: user.email,
       phoneNumber: user.phoneNumber,
     },
     accessToken,
@@ -80,16 +79,31 @@ export async function signup(req: Request, res: Response) {
 }
 
 export async function login(req: Request, res: Response) {
-  const { username, phoneNumber, password } = req.body;
+  const { email, phoneNumber, password } = req.body;
+
+  const searchConditions = [];
+  if (email) {
+    searchConditions.push({ email: email.toLowerCase().trim() });
+  }
+  if (phoneNumber) {
+    searchConditions.push({ phoneNumber });
+  }
+
+  if (searchConditions.length === 0) {
+    return res.status(400).json({
+      success: false,
+      message: 'Email or phoneNumber is required',
+    });
+  }
 
   const user = await userModel.findOne({
-    $or: [{ username }, { phoneNumber }],
+    $or: searchConditions,
   });
 
   if (!user) {
     return res.status(401).json({
       success: false,
-      message: 'Invalid username or phoneNumber',
+      message: 'Invalid email or phoneNumber',
     });
   }
 
@@ -107,7 +121,7 @@ export async function login(req: Request, res: Response) {
   const refreshToken = jwt.sign(
     {
       id: user._id,
-      username: user.username,
+      email: user.email,
       phoneNumber: user.phoneNumber,
     },
     config.JWT_SECRET,
@@ -118,7 +132,7 @@ export async function login(req: Request, res: Response) {
 
   const refreshTokenHash = crypto.createHash('sha256').update(refreshToken).digest('hex');
 
-  const session = sessionModel.create({
+  const session = await sessionModel.create({
     userId: user._id,
     refreshTokenHash,
     ip: req.ip || 'unknown',
@@ -128,7 +142,7 @@ export async function login(req: Request, res: Response) {
   const accessToken = jwt.sign(
     {
       id: user._id,
-      username: user.username,
+      email: user.email,
       phoneNumber: user.phoneNumber,
     },
     config.JWT_SECRET,
@@ -183,7 +197,7 @@ export async function getMe(req: Request, res: Response) {
     success: true,
     message: 'User fetched successful',
     data: {
-      username: user.username,
+      email: user.email,
       phoneNumber: user.phoneNumber,
     },
   });
@@ -225,7 +239,7 @@ export async function refreshToken(req: Request, res: Response) {
   const accessToken = jwt.sign(
     {
       id: decoded.id,
-      username: decoded.username,
+      email: decoded.email,
       phoneNumber: decoded.phoneNumber,
     },
     config.JWT_SECRET,
@@ -237,7 +251,7 @@ export async function refreshToken(req: Request, res: Response) {
   const newRefreshToken = jwt.sign(
     {
       id: decoded.id,
-      username: decoded.username,
+      email: decoded.email,
       phoneNumber: decoded.phoneNumber,
     },
     config.JWT_SECRET,
@@ -321,7 +335,7 @@ export async function logoutAll(req: Request, res: Response) {
 
   await sessionModel.updateMany(
     {
-      user: decoded.id,
+      userId: decoded.id,
       revoked: false,
     },
     {
