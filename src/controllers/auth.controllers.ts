@@ -6,23 +6,28 @@ import sessionModel from '../models/session.model.js';
 import crypto from 'crypto';
 
 export async function signup(req: Request, res: Response) {
-  const { email, phoneNumber, password } = req.body;
+  const { username, email, phoneNumber, password } = req.body;
 
   const userExist = await userModel.findOne({
-    $or: [{ email: email?.toLowerCase().trim() }, { phoneNumber }],
+    $or: [
+      { username: username?.toLowerCase().trim() },
+      { email: email?.toLowerCase().trim() },
+      { phoneNumber },
+    ],
   });
 
   if (userExist) {
     return res.status(409).json({
       success: false,
-      message: 'Email or phoneNumber already exists',
+      message: 'Username, email or phoneNumber already exists',
     });
   }
 
   const hashedPassword = crypto.createHash('sha256').update(password).digest('hex');
 
   const user = await userModel.create({
-    email,
+    username: username?.toLowerCase().trim(),
+    email: email?.toLowerCase().trim(),
     phoneNumber,
     password: hashedPassword,
   });
@@ -30,6 +35,7 @@ export async function signup(req: Request, res: Response) {
   const refreshToken = jwt.sign(
     {
       id: user._id,
+      username: user.username,
       email: user.email,
       phoneNumber: user.phoneNumber,
     },
@@ -51,6 +57,7 @@ export async function signup(req: Request, res: Response) {
   const accessToken = jwt.sign(
     {
       id: user._id,
+      username: user.username,
       email: user.email,
       phoneNumber: user.phoneNumber,
     },
@@ -71,6 +78,7 @@ export async function signup(req: Request, res: Response) {
     success: true,
     message: 'User signup successfully',
     data: {
+      username: user.username,
       email: user.email,
       phoneNumber: user.phoneNumber,
     },
@@ -79,9 +87,12 @@ export async function signup(req: Request, res: Response) {
 }
 
 export async function login(req: Request, res: Response) {
-  const { email, phoneNumber, password } = req.body;
+  const { username, email, phoneNumber, password } = req.body;
 
   const searchConditions = [];
+  if (username) {
+    searchConditions.push({ username: username.toLowerCase().trim() });
+  }
   if (email) {
     searchConditions.push({ email: email.toLowerCase().trim() });
   }
@@ -92,7 +103,7 @@ export async function login(req: Request, res: Response) {
   if (searchConditions.length === 0) {
     return res.status(400).json({
       success: false,
-      message: 'Email or phoneNumber is required',
+      message: 'Username, email or phoneNumber is required',
     });
   }
 
@@ -103,7 +114,7 @@ export async function login(req: Request, res: Response) {
   if (!user) {
     return res.status(401).json({
       success: false,
-      message: 'Invalid email or phoneNumber',
+      message: 'Invalid username, email or phoneNumber',
     });
   }
 
@@ -121,6 +132,7 @@ export async function login(req: Request, res: Response) {
   const refreshToken = jwt.sign(
     {
       id: user._id,
+      username: user.username,
       email: user.email,
       phoneNumber: user.phoneNumber,
     },
@@ -142,6 +154,7 @@ export async function login(req: Request, res: Response) {
   const accessToken = jwt.sign(
     {
       id: user._id,
+      username: user.username,
       email: user.email,
       phoneNumber: user.phoneNumber,
     },
@@ -197,6 +210,7 @@ export async function getMe(req: Request, res: Response) {
     success: true,
     message: 'User fetched successful',
     data: {
+      username: user.username,
       email: user.email,
       phoneNumber: user.phoneNumber,
     },
@@ -239,6 +253,7 @@ export async function refreshToken(req: Request, res: Response) {
   const accessToken = jwt.sign(
     {
       id: decoded.id,
+      username: decoded.username,
       email: decoded.email,
       phoneNumber: decoded.phoneNumber,
     },
@@ -251,6 +266,7 @@ export async function refreshToken(req: Request, res: Response) {
   const newRefreshToken = jwt.sign(
     {
       id: decoded.id,
+      username: decoded.username,
       email: decoded.email,
       phoneNumber: decoded.phoneNumber,
     },
