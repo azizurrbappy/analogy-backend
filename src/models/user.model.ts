@@ -2,6 +2,10 @@ import mongoose from 'mongoose';
 
 const userSchema = new mongoose.Schema(
   {
+    fullName: {
+      type: String,
+    },
+
     username: {
       type: String,
       required: [true, 'Username is required'],
@@ -12,17 +16,16 @@ const userSchema = new mongoose.Schema(
 
     email: {
       type: String,
-      required: [true, 'Email is required'],
       unique: [true, 'Email must be unique'],
-      lowercase: true,
-      trim: true,
+      sparse: true,
       match: [/^\S+@\S+\.\S+$/, 'Please provide a valid email address'],
     },
 
     phoneNumber: {
       type: String,
-      required: [true, 'Phone Number is required'],
       unique: [true, 'Phone Number must be unique'],
+      sparse: true,
+      trim: true,
     },
 
     password: {
@@ -30,7 +33,17 @@ const userSchema = new mongoose.Schema(
       required: [true, 'Password is required'],
     },
 
-    verified: {
+    account_status: {
+      type: Boolean,
+      default: false,
+    },
+
+    is_email_verified: {
+      type: Boolean,
+      default: false,
+    },
+
+    is_phone_verified: {
       type: Boolean,
       default: false,
     },

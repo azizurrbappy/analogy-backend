@@ -6,7 +6,7 @@ const authRouter = Router();
 /**
  * POST /api/auth/signup
  */
-authRouter.post('/signup', authControllers.signup);
+authRouter.post('/registration', authControllers.registration);
 
 /**
  * POST /api/auth/login
