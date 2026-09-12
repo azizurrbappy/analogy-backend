@@ -9,6 +9,11 @@ const authRouter = Router();
 authRouter.post('/registration', authControllers.registration);
 
 /**
+ * POST /api/auth/check-username
+ */
+authRouter.post('/check-username', authControllers.checkUsername);
+
+/**
  * POST /api/auth/login
  */
 authRouter.post('/login', authControllers.login);
