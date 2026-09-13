@@ -70,7 +70,7 @@ export async function getOriginalUrl(req: Request, res: Response) {
       { slug },
       { $inc: { clicks: 1 } },
       {
-        returnDocument: 'after',
+        new: true,
       },
     );
 
