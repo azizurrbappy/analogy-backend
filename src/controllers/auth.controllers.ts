@@ -98,12 +98,7 @@ export async function registration(req: Request, res: Response) {
       success: true,
       message: 'User signup successful',
 
-      data: {
-        id: user._id,
-        username: user.username,
-        email: user.email,
-        phoneNumber: user.phoneNumber,
-      },
+      data: user,
 
       accessToken,
     });
@@ -126,7 +121,7 @@ export async function checkUsername(req: Request, res: Response) {
     const { username } = req.body;
 
     // Basic Validation
-    if (!username || typeof username !== 'string') {
+    if (!username) {
       return res.status(400).json({
         success: false,
         message: 'Username is required',
@@ -142,7 +137,7 @@ export async function checkUsername(req: Request, res: Response) {
       .select('_id username');
 
     if (usernameExist) {
-      return res.status(409).json({
+      return res.status(200).json({
         success: false,
         message: 'Username already exists',
         data: { id: usernameExist._id, username: usernameExist.username },
