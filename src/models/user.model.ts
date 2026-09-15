@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 
 const userSchema = new mongoose.Schema(
   {
-    fullName: {
+    name: {
       type: String,
     },
 
@@ -18,14 +18,6 @@ const userSchema = new mongoose.Schema(
       type: String,
       unique: [true, 'Email must be unique'],
       sparse: true,
-      match: [/^\S+@\S+\.\S+$/, 'Please provide a valid email address'],
-    },
-
-    phoneNumber: {
-      type: String,
-      unique: [true, 'Phone Number must be unique'],
-      sparse: true,
-      trim: true,
     },
 
     password: {
@@ -39,12 +31,7 @@ const userSchema = new mongoose.Schema(
       default: false,
     },
 
-    is_email_verified: {
-      type: Boolean,
-      default: false,
-    },
-
-    is_phone_verified: {
+    emailVerified: {
       type: Boolean,
       default: false,
     },
@@ -54,6 +41,6 @@ const userSchema = new mongoose.Schema(
   },
 );
 
-const userModel = mongoose.model('User', userSchema);
+const userModel = mongoose.model('User', userSchema, 'user');
 
 export default userModel;
