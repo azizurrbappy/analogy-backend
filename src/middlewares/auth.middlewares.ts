@@ -1,6 +1,7 @@
 import { createRemoteJWKSet, jwtVerify } from 'jose';
 import type { JWTPayload } from 'jose';
 import type { Request, Response, NextFunction } from 'express';
+import config from '../config/config.js';
 
 declare global {
   namespace Express {
@@ -10,10 +11,10 @@ declare global {
   }
 }
 
-const JWKS = createRemoteJWKSet(new URL(`${process.env.CLIENT_URL}/api/auth/jwks`));
+const JWKS = createRemoteJWKSet(new URL(`${config.CLIENT_URL}/api/auth/jwks`));
 
 const BASE_URL =
-  process.env.CLIENT_URL ??
+  config.CLIENT_URL ??
   (() => {
     throw new Error('BASE_URL env variable is not set');
   })();
