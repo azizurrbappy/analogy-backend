@@ -5,6 +5,7 @@ import cookieParser from 'cookie-parser';
 import authRouter from './routes/auth.routes.js';
 import config from './config/config.js';
 import smsRouter from './routes/sms.routes.js';
+import mailRouter from './routes/mail.routers.js';
 
 const app = express();
 
@@ -24,6 +25,8 @@ app.use(cookieParser());
 app.use('/api/auth', authRouter);
 
 app.use('/api/sms', smsRouter);
+
+app.use('/api/mail', mailRouter);
 
 app.use('/', (req, res) => {
   return res.status(200).json({

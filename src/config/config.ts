@@ -51,6 +51,22 @@ if (!process.env.GATE_SIM) {
   throw new Error('GATE_SIM is not defined in environment variable');
 }
 
+if (!process.env.MAIL_API_KEY) {
+  throw new Error('MAIL_API_KEY is not defined in environment variable');
+}
+
+if (!process.env.CLOUDFLARE_ACCOUNT_ID) {
+  throw new Error('CLOUDFLARE_ACCOUNT_ID is not defined in environment variable');
+}
+
+if (!process.env.MAIL_FROM) {
+  throw new Error('MAIL_FROM is not defined in environment variable');
+}
+
+if (!process.env.APP_NAME) {
+  throw new Error('APP_NAME is not defined in environment variable');
+}
+
 const config: ConfigTypes = {
   // Server
   PORT: process.env.PORT,
@@ -71,6 +87,12 @@ const config: ConfigTypes = {
   GATE_PASSWORD: process.env.GATE_PASSWORD,
   GATE_DEVICE_ID: process.env.GATE_DEVICE_ID,
   GATE_SIM: process.env.GATE_SIM,
+
+  // Cloudflare
+  MAIL_API_KEY: process.env.MAIL_API_KEY,
+  CLOUDFLARE_ACCOUNT_ID: process.env.CLOUDFLARE_ACCOUNT_ID,
+  MAIL_FROM: process.env.MAIL_FROM,
+  APP_NAME: process.env.APP_NAME,
 };
 
 export default config;

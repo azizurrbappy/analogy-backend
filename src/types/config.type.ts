@@ -19,4 +19,10 @@ export default interface ConfigTypes {
   GATE_PASSWORD: string;
   GATE_DEVICE_ID: string;
   GATE_SIM: string;
+
+  // Cloudflare
+  MAIL_API_KEY: string;
+  CLOUDFLARE_ACCOUNT_ID: string;
+  MAIL_FROM: string;
+  APP_NAME: string;
 }
